@@ -19,6 +19,9 @@ class Cache:
 
 
 class Entity:
+    def __init__(self):
+        self._cached_children = []
+
     @classmethod
     def from_data(cls, data):
         instance = cls()
@@ -29,12 +32,23 @@ class Entity:
         return instance
 
     @property
-    def children(self):        
-        return self.children
+    def nodes(self): 
+        if not hasattr(self, 'children') or not self.children:
+            return None
+        
+        for item in self.children:
+            self._cached_children.append(
+                Entity.from_data(item)
+            )
+
+        return self._cached_children
 
     @property
     def behavior(self):
-        return self.behavior
+        if not hasattr(self, 'behavior') or not self.behavior:
+            return None
+
+        return Entity.from_data(self.behavior)
 
 
 class Trigger:
@@ -183,7 +197,7 @@ if __name__ == '__main__':
         data = json.loads(output.read())
 
         instance = Entity.from_data(data)
-        print instance.children
+        print instance.nodes
         # flow = Flow(data)
 
         # flow.next()
