@@ -1,7 +1,21 @@
 import abc
 
 
-__all__ = ['IntentHandler', 'PathHandler', 'MethodHandler', 'Responsibility', 'Cache']
+__all__ = ['IntentHandler', 'Cache', 'Message']
+
+
+def Message(entity):
+    if not hasattr(entity, 'message') or not entity.message:
+        return ''
+
+    nodes = entity.nodes
+    if nodes:
+        choice_list = [c.intent for c in nodes]
+        choice_ = '(#{})'.format(' #'.join(choice_list) if choice_list else '')
+    else:
+        choice_ = ''
+    
+    return '{} {}'.format(entity.message, choice_)
 
 
 class Cache:
@@ -47,50 +61,11 @@ class IntentHandler(Handler):
         if not self._intent:
             return None
 
-        for c in self._entity.children:
+        for c in self._entity.nodes:
             if not hasattr(c, 'intent') or not c.intent:
                 continue
 
             if c.intent == self._intent:
                 return c
-        
+     
         return None
-
-
-class PathHandler(Handler):
-    def __init__(self, path, data):
-        self._path = path
-        self._data = data
-
-    def handle(self):
-        pass
-
-
-class MethodHandler(Handler):
-    def __init__(self, method, **kwargs):
-        self._method = method
-
-    def handle(self):
-        pass
-
-
-class Responsibility:
-    def __init__(self):
-        self._handlers = []
-
-    @classmethod
-    def create(cls):
-        return cls()
-
-    def add_handler(self, h):
-        self._handlers.append(h)
-        return self
-
-    def response(self, cached):
-        for h in self._handlers:
-            i = h.handle()
-            if i:
-                print ('l')
-        
-        else:
-            return None

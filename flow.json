@@ -48,6 +48,7 @@
       "intent": "msgraph",
       "behavior": {
         "method": true,
+        "path": 3,
         "message": "OK MSGraph"
       }
     },
