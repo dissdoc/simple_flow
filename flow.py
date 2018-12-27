@@ -1,21 +1,13 @@
+import abc
 import json
+
+from utils import *
 
 
 class dotdict(dict):
     __getattr__ = dict.get
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
-
-
-class Cache:
-    def __init__(self):
-        pass
-
-    def put(self):
-        pass
-
-    def item(self, id):
-        pass
 
 
 class Entity:
@@ -27,13 +19,19 @@ class Entity:
         instance = cls()
 
         for key, value in data.items():          
-            setattr(instance, key, value)       
+            setattr(instance, key, value)   
+
+        if not hasattr(instance, 'children'):
+            setattr(instance, 'children', None)
+
+        if not hasattr(instance, 'behavior'):
+            setattr(instance, 'behavior', None)
 
         return instance
 
     @property
     def nodes(self): 
-        if not hasattr(self, 'children') or not self.children:
+        if not self.children:
             return None
         
         for item in self.children:
@@ -45,7 +43,7 @@ class Entity:
 
     @property
     def behavior(self):
-        if not hasattr(self, 'behavior') or not self.behavior:
+        if not self.behavior:
             return None
 
         return Entity.from_data(self.behavior)
@@ -181,24 +179,39 @@ class Trigger:
 #         return self
 
 
+def ShowMessage(title, choice_list=None):
+    choice_ = '({})'.format(' #'.join(choice_list) if choice_list else '') 
+    message = '{} {}'.format(title, choice_)
+    print (message)
+
+
 class Flow:
     def __init__(self, data):
         self._data = data
+        self._current_entity = None
+
+        self._cached = Cache.cached(data)
 
     def __iter__(self):
         return self
 
-    def next(self):
+    def next(self, intent=None, path=None, method=None, **kwargs):
+        if not self._current_entity:
+            self._current_entity = Entity.from_data(data)
+
+        r = Responsibility.create()\
+                            .add_handler(IntentHandler(intent, self._current_entity))\
+                            .add_handler(PathHandler(path, self._current_entity))\
+                            .add_handler(MethodHandler(method, **kwargs))  
+        r.response(self._cached) 
+
         return self
 
 
 if __name__ == '__main__':
     with open('flow.json') as output:
         data = json.loads(output.read())
+        flow = Flow(data)
 
-        instance = Entity.from_data(data)
-        print instance.nodes
-        # flow = Flow(data)
-
-        # flow.next()
+        flow.next()
         # flow.next('ldap')
