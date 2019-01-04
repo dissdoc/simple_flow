@@ -1,0 +1,70 @@
+{
+    "id": 1,
+    "event": {
+      "before": {
+        "message": "Hello. Let's start dialog"
+      }
+    },
+    "children": [
+      {
+          "id": 2,
+          "intent": "create",
+          "similar": ["add", "new"],
+          "event": {
+            "before": {
+              "message": "you wanna create"
+            }
+          },
+          "children": [
+              {
+                  "id": 5,
+                  "intent": "user",
+                  "event": {
+                    "after": {
+                      "path": 7
+                    }
+                  }
+              },
+              {
+                  "id": 6,
+                  "intent": "group"
+              }
+          ]
+      },
+      {
+          "id": 3,
+          "intent": "remove"
+      },
+      {
+          "id": 4,
+          "intent": "update"
+      },
+      {
+          "id": 7,
+          "event": {
+            "before": {
+              "message": "You wanna create user. Where to do it?"
+            }
+          },
+          "children": [
+              {
+                  "id": 8,
+                  "intent": "ldap",
+                  "event": {
+                    "before": {
+                      "message": "OK. Ldap"
+                    }
+                  }
+              },
+              {
+                  "id": 9,
+                  "intent": "msgraph"
+              },
+              {
+                  "id": 10,
+                  "intent": "jira"
+              }
+          ]
+      }
+    ]
+  }
