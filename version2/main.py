@@ -15,6 +15,8 @@ if __name__ == '__main__':
             flow.previous()
         elif command == 'next':
             flow.forward()
+        elif command.startswith('help'):
+            flow.similar(intent=command.split(' ')[1])
         else:
             flow.next(command)
 

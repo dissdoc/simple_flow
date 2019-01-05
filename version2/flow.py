@@ -81,10 +81,16 @@ class Node:
     def redirect(self):
         return Redirect.to_link(self._entity.event)
 
-    def child_id(self, intent):
+    def raw_child_id(self, intent):
+        for child in self._children:
+            if (child.intent == intent) or (child.similar and intent in child.similar):
+                return child.id
+        return None
+
+    def child(self, intent):
         for child in self._children:
             if child.intent == intent:
-                return child.id
+                return child
         return None
 
 
@@ -143,7 +149,7 @@ class Flow:
             self._current = self._builder.build()
 
         if intent:
-            id = self._current.child_id(intent)
+            id = self._current.raw_child_id(intent)
             if not id:
                 return self
 
@@ -161,3 +167,6 @@ class Flow:
         if self._current.message:
             if self._current.message.after:
                 print(self._current.message.after)
+
+    def similar(self, intent):
+        print(self._current.child(intent).similar)

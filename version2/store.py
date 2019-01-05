@@ -73,6 +73,10 @@ class Entity:
     def event(self):
         return None if not hasattr(self, '_event') else Event.to_event(self._event)
 
+    @property
+    def similar(self):
+        return None if not hasattr(self, '_similar') else self._similar
+
 
 class Memento:
     def __init__(self):
