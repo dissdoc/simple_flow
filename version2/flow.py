@@ -2,11 +2,21 @@ from version2.store import Entity
 from version2.store import Originator
 
 
-class Message:
+class AbstractEvent:
     def __init__(self, before=None, after=None):
         self._before = before
         self._after = after
 
+    @property
+    def before(self):
+        return self._before
+
+    @property
+    def after(self):
+        return self._after
+
+
+class Message(AbstractEvent):
     @classmethod
     def to_message(cls, event, children):
         commands = []
@@ -29,20 +39,8 @@ class Message:
 
         return cls(before, after)
 
-    @property
-    def before(self):
-        return self._before
 
-    @property
-    def after(self):
-        return self._after
-
-
-class Redirect:
-    def __init__(self, before, after):
-        self._before = before
-        self._after = after
-
+class Redirect(AbstractEvent):
     @classmethod
     def to_link(cls, event):
         before = None
@@ -55,13 +53,11 @@ class Redirect:
 
         return cls(before, after)
 
-    @property
-    def before(self):
-        return self._before
 
-    @property
-    def after(self):
-        return self._after
+class Model(AbstractEvent):
+    @classmethod
+    def to_model(cls, event):
+        pass
 
 
 class Node:
@@ -80,6 +76,10 @@ class Node:
     @property
     def redirect(self):
         return Redirect.to_link(self._entity.event)
+
+    @property
+    def model(self):
+        return Model.to_model(self._entity.event)
 
     def raw_child_id(self, intent):
         for child in self._children:

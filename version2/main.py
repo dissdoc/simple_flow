@@ -20,7 +20,6 @@ if __name__ == '__main__':
         else:
             flow.next(command)
 
-
         flow.before_event()
         command = input(r"~> ")
         flow.after_event()

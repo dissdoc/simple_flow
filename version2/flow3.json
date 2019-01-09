@@ -53,6 +53,9 @@
                   "event": {
                     "before": {
                       "message": "OK. Ldap"
+                    },
+                    "after": {
+                      "model": "python:models.user.User"
                     }
                   }
               },
