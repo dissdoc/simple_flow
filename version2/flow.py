@@ -57,7 +57,15 @@ class Redirect(AbstractEvent):
 class Model(AbstractEvent):
     @classmethod
     def to_model(cls, event):
-        pass
+        before = None
+        after = None
+
+        if event.before and 'model' in event.before:
+            before = event.before['model']
+        if event.after and 'model' in event.after:
+            after = event.after['model']
+
+        return cls(before, after)
 
 
 class Node:
@@ -143,6 +151,9 @@ class Flow:
         if self._current.message:
             if self._current.message.before:
                 print(self._current.message.before)
+        if self._current.model:
+            if self._current.model.before:
+                print(self._current.model.before)
 
     def next(self, intent=None, method=None, *args):
         if not intent and not method:

@@ -47,26 +47,34 @@
             }
           },
           "children": [
-              {
-                  "id": 8,
-                  "intent": "ldap",
-                  "event": {
-                    "before": {
-                      "message": "OK. Ldap"
-                    },
-                    "after": {
-                      "model": "python:models.user.User"
-                    }
+            {
+                "id": 8,
+                "intent": "ldap",
+                "event": {
+                  "before": {
+                    "message": "OK. Ldap"
+                  },
+                  "after": {
+                    "path": 11
                   }
-              },
-              {
-                  "id": 9,
-                  "intent": "msgraph"
-              },
-              {
-                  "id": 10,
-                  "intent": "jira"
+                }
+            },
+            {
+                "id": 9,
+                "intent": "msgraph"
+            },
+            {
+                "id": 10,
+                "intent": "jira"
+            },
+            {
+              "id": 11,
+              "event": {
+                "before": {
+                  "model": "python:models.user.User"
+                }
               }
+            }
           ]
       }
     ]
