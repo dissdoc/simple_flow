@@ -1,5 +1,21 @@
 from version2.store import Entity
 from version2.store import Originator
+from version2.core.creators import PathManager
+from version2.core.creators import Generator
+
+
+class BackCommandHandler:
+    def __init__(self):
+        self._back = False
+
+    def back(self):
+        self._back = True
+
+    def reback(self):
+        self._back = False
+
+    def is_back(self):
+        return self._back
 
 
 class AbstractEvent:
@@ -147,13 +163,14 @@ class Flow:
         if index:
             self._current_entity(index)
 
-    def before_event(self):
+    def before_event(self, handler=None):
         if self._current.message:
             if self._current.message.before:
                 print(self._current.message.before)
         if self._current.model:
             if self._current.model.before:
-                print(self._current.model.before)
+                flow_model = FlowModel(self._current.model.before)
+                flow_model.start_flow(handler)
 
     def next(self, intent=None, method=None, *args):
         if not intent and not method:
@@ -181,3 +198,29 @@ class Flow:
 
     def similar(self, intent):
         print(self._current.child(intent).similar)
+
+
+class FlowModel:
+    def __init__(self, model):
+        self._model = model
+        self._instance = None
+
+    def start_flow(self, handler):
+        generator = Generator()
+        command = ''
+
+        while command != 'stop':
+            if self._instance is None:
+                self._create_model()
+                generator.instance = self._instance
+
+            generator.next() if generator.weak_value is None else generator.next(command)
+
+            command = input('# ')
+
+        print (generator.instance.id, generator.instance.name)
+        handler.back()
+
+    def _create_model(self):
+        manager = PathManager.open(self._model)
+        self._instance = manager.model
